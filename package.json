@@ -1,0 +1,19 @@
+{
+  "name": "bread_and_butter",
+  "version": "1.0.0",
+  "description": "See below for the current Bread and Butter cases included, organized by sytem.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sheunaluko/Bread-And-Butter-Medicine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sheunaluko/Bread-And-Butter-Medicine/issues"
+  },
+  "homepage": "https://github.com/sheunaluko/Bread-And-Butter-Medicine#readme"
+}

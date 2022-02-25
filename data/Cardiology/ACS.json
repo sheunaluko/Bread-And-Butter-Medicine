@@ -1,0 +1,40 @@
+{ 
+    "ID" : "ACS" , 
+    "description" : "Initial evaluation of suspected ACS"    ,
+    "symptoms" : [ "chest pain" , "nausea" , "dyspnea" , "diaphoresis"   ] ,
+    "risk factors" : [ "old age", "diabetes", "dyslipidemia", "cigarette smoking", "hypertension", "cocaine use" , "methamphetamine use" ] ,
+    "labs" : ["troponin" , "bnp" ] ,
+    "procedures" : [ { "name" : "ekg" ,
+		       "info" : [
+			 "Consider EKG in ANY patient over 30 with chest pain, over 50 with dyspnea or altered mental status or upper extremity pain or syncope or weakness, over 80 with abdominal pain, nausea, or vomiting",
+			 "If the initial EKG is normal, it should be repeated at 30 minute intervals while the patient remains symptomatic and suspicion for ACS remains. In the early hours of MI, peaked hyperacute T waves may be the only noted abnormality",
+			 "If LBBB is present then further criteria (Sgarbossa) are needed", 
+			 "Right sided leads should be obtained if there is evidence of inferior wall ischemia"
+		       ] } , "telemetry" ] ,
+    "interventions" : [{ "name" : "supplemental oxygen" , "goal" : "oxygen saturation > 90%" }] ,
+    "medications" : [
+	{"name" : "aspirin" ,
+	 "dose" : "325mg" ,
+	 "frequency" : "once" ,
+	 "info" : "The only real contraindication is history of anaphylaxis"
+	} ,
+	{"name" : "nitroglycerin" ,
+	 "form" : "tablet" , 
+	 "dose" : "0.4mg" , 
+	 "frequency" : "every 5 minutes" ,
+	 "contraindications" : ["aortic stenosis", "hypertrophic cardiomyopathy", "right ventricular infarct", "hypotension", "bradycardia", "tachycardia", "phosphodiesterase 5 inhibitor use" ],
+	 "info" : [ "Nitrates are contraindicated when inferior myocardial infarction is suspected, with possible invovlement of the right ventricle, since these patients are preload dependent and nitrates can cause severe hypotension" , "Nitrates are contraindicated when PDE5 inhibitors have been used with 24 (sildenafil,vardenafil) or 36 (tadalafil) hours", "Response of pain to nitroglycerin administration is NOT diagnostic for ACS" ] 	 
+	},
+	{
+	    "name" : "morphine" ,
+	    "form" : "intravenous" ,
+	    "dose" : "2mg|4mg" ,
+	    "info" : "Can be used for refractory pain however may worsen outcomes"  
+	}
+    ], 
+    "differential" : [ "aortic dissection" , "pulmonary embolism", "esophageal rupture" ,"perforating peptic ulcer", "tension pneumothorax" ],
+    "info" : [
+      "TODO : treat LHF and beta blocker " 
+      ] 
+		       
+} 

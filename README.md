@@ -5,8 +5,10 @@ See below for the current Bread and Butter cases included, organized by sytem.
 
 ## Cardiology
 
-Atrial Fibrillation<br>
+Atrial Fibrillation with RVR<br>
 ACS<br>
+STEMI<br>
+NSTEMI<br>
 Acute Right Heart Failure Exacerbation<br>
 Acute Left  Heart Failure Exacerbation<br>
 Syncope<br>
@@ -32,6 +34,7 @@ Acute Pancreatitis<br>
 Acute Cholangitis<br>
 Cholecystitis<br>
 Hyperbilirubinemia<br>
+Decompensated Liver Failure<br>
 Transaminitis<br>
 
 ## Hematology
