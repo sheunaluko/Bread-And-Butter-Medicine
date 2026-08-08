@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* -------------------------------------------------------------------------
+   Themes. Palette values ported from ../climax/site/styles.css so this app
+   feels part of the same family. Existing --color-* names are preserved so
+   nothing downstream has to change.
+
+   Semantic mapping (climax token → our token):
+     bg-0        → --color-bg
+     bg-1        → --color-surface
+     bg-2        → --color-surface-2
+     line        → --color-border
+     dim         → --color-muted
+     fg-strong   → --color-text     (we bias toward strong body text)
+     accent      → --color-accent
+     accent-fg   → --color-accent-fg
+     success     → --color-ok
+     warn        → --color-warn
+     danger      → --color-danger
+   ------------------------------------------------------------------------- */
+
+:root,
+html[data-theme="midnight"] {
+  --color-bg: #0d0e14;
+  --color-surface: #14161f;
+  --color-surface-2: #1b1e2a;
+  --color-border: #2b3046;
+  --color-muted: #6c7594;
+  --color-text: #ffffff;
+  --color-text-soft: #d7dcea;
+  --color-accent: #6cf6ff;
+  --color-accent-fg: #001820;
+  --color-ok: #5bf28a;
+  --color-warn: #ffb86c;
+  --color-danger: #ff6b8a;
+  color-scheme: dark;
+}
+
+html[data-theme="carbon"] {
+  --color-bg: #05060a;
+  --color-surface: #0d1017;
+  --color-surface-2: #161a24;
+  --color-border: #232838;
+  --color-muted: #66708b;
+  --color-text: #ffffff;
+  --color-text-soft: #d5dae8;
+  --color-accent: #7cffbe;
+  --color-accent-fg: #00170a;
+  --color-ok: #7cffbe;
+  --color-warn: #ffcf7a;
+  --color-danger: #ff7a95;
+  color-scheme: dark;
+}
+
+html[data-theme="nord"] {
+  --color-bg: #2e3440;
+  --color-surface: #3b4252;
+  --color-surface-2: #434c5e;
+  --color-border: #4c566a;
+  --color-muted: #7b869a;
+  --color-text: #eceff4;
+  --color-text-soft: #d8dee9;
+  --color-accent: #88c0d0;
+  --color-accent-fg: #21272e;
+  --color-ok: #a3be8c;
+  --color-warn: #ebcb8b;
+  --color-danger: #bf616a;
+  color-scheme: dark;
+}
+
+html[data-theme="paper"] {
+  --color-bg: #f5f2ea;
+  --color-surface: #ffffff;
+  --color-surface-2: #ecebe4;
+  --color-border: #d9d6cc;
+  --color-muted: #7a7568;
+  --color-text: #0f0e0c;
+  --color-text-soft: #2a2825;
+  --color-accent: #c17a3d;
+  --color-accent-fg: #ffffff;
+  --color-ok: #4a9a5e;
+  --color-warn: #c88a1c;
+  --color-danger: #b0433f;
+  color-scheme: light;
+}
+
+html[data-theme="solar-light"] {
+  --color-bg: #fdf6e3;
+  --color-surface: #eee8d5;
+  --color-surface-2: #e2dcc3;
+  --color-border: #d2ccb6;
+  --color-muted: #93a1a1;
+  --color-text: #073642;
+  --color-text-soft: #586e75;
+  --color-accent: #268bd2;
+  --color-accent-fg: #fdf6e3;
+  --color-ok: #859900;
+  --color-warn: #b58900;
+  --color-danger: #dc322f;
+  color-scheme: light;
+}
+
+/* Global surface */
+html, body, #root {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+html, body { transition: background-color 220ms ease, color 220ms ease; }
+body { margin: 0; overscroll-behavior-y: none; }
+
+::selection { background: color-mix(in oklch, var(--color-accent) 40%, transparent); }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+@utility safe-b { padding-bottom: env(safe-area-inset-bottom); }
+@utility safe-t { padding-top: env(safe-area-inset-top); }

@@ -1,0 +1,45 @@
+// Cloudflare Worker + Static Assets + D1 config.
+//
+// One-time setup for the feedback D1 database:
+//   npm run db:create        # -> prints database_id
+//   # paste the id into d1_databases[0].database_id below
+//   npm run db:migrate       # apply schema.sql to remote DB
+//   npm run db:migrate:local # (optional) apply to local dev DB
+//
+// Deploy:          npm run deploy
+// Read feedback:   npm run feedback           (pretty table)
+//                  npm run feedback:tail      (last 10)
+//                  npm run feedback:json      (raw JSON)
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "breadandbutter",
+  "compatibility_date": "2026-08-01",
+  "main": "src/worker/index.ts",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "breadandbuttermedicine.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.breadandbuttermedicine.com",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "breadandbutter-feedback",
+      "database_id": "be1ec716-a395-4a67-82a8-ab2b2de29cf5"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
