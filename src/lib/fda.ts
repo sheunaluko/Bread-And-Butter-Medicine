@@ -30,11 +30,33 @@ export interface FdaResult {
 }
 
 export async function searchDrug(q: string, signal?: AbortSignal): Promise<FdaResult[]> {
-  const term = q.trim()
-  if (!term) return []
-  const safe = term.replace(/"/g, "").toLowerCase()
-  const query = `(openfda.generic_name:"${safe}"+openfda.brand_name:"${safe}"+openfda.substance_name:"${safe}")`
-  const url = `${BASE}?search=${query.replace(/\+/g, "+")}&limit=10`
+  const tokens = q
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.replace(/[^a-z0-9-]/g, ""))
+    .filter(Boolean)
+  if (!tokens.length) return []
+  // Try all tokens ANDed together per field first.
+  const results = await runQuery(tokens, signal)
+  // Fall back to just the first token if multi-word returned nothing.
+  // Handles "metoprolol xr", "sacubitril valsartan" where a trailing token
+  // isn't indexed by openFDA but the first word is.
+  if (results.length === 0 && tokens.length > 1) {
+    return runQuery([tokens[0]], signal)
+  }
+  return results
+}
+
+async function runQuery(tokens: string[], signal?: AbortSignal): Promise<FdaResult[]> {
+  // Lucene inside openFDA: unquoted, AND between tokens per field, OR across fields.
+  // Wrapping tokens in parens keeps the AND scoped to that field.
+  const clause = tokens.length === 1 ? tokens[0] : `(${tokens.join("+AND+")})`
+  const query =
+    `(openfda.generic_name:${clause}` +
+    `+OR+openfda.brand_name:${clause}` +
+    `+OR+openfda.substance_name:${clause})`
+  const url = `${BASE}?search=${query}&limit=10`
   const res = await fetch(url, { signal })
   if (!res.ok) {
     if (res.status === 404) return []
