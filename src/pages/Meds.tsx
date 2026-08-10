@@ -25,6 +25,7 @@ import {
   type FdaResult,
 } from "@/lib/fda"
 import { simulate, absorptionHalfLifeFromTmax, type PkRoute } from "@/lib/pk"
+import { MoleculeViewer } from "@/components/MoleculeViewer"
 import { cn } from "@/lib/utils"
 
 export function Meds() {
@@ -158,6 +159,13 @@ function MedDetail({ r, onBack }: { r: FdaResult; onBack: () => void }) {
   const onset = useMemo(() => (combined ? extractOnset(combined) : null), [combined])
   const tmax = useMemo(() => (combined ? extractTmax(combined) : null), [combined])
   const route = detectRoute(r)
+  // PubChem lookup — prefer substance name (cleanest single molecule),
+  // fall back to generic, then brand.
+  const structureName =
+    r.openfda?.substance_name?.[0] ??
+    r.openfda?.generic_name?.[0] ??
+    r.openfda?.brand_name?.[0] ??
+    ""
   const specific = (r.use_in_specific_populations ?? []).join("\n\n")
   const renal = extractSection(specific, /renal|creatinine|CrCl|dialysis|nephro/i)
   const hepatic = extractSection(specific, /hepatic|liver|cirrhosis|child[-\s]?pugh/i)
@@ -198,6 +206,8 @@ function MedDetail({ r, onBack }: { r: FdaResult; onBack: () => void }) {
           </Badge>
         )}
       </div>
+
+      {structureName && <MoleculeViewer name={structureName} />}
 
       {t12 && (
         <PkChart

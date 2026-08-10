@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
+import { MoleculeViewer } from "@/components/MoleculeViewer"
 import {
   antibiotics,
   organisms,
@@ -198,6 +199,8 @@ function AbxMode({
           {abx.notes && (
             <p className="mt-2 text-xs text-[var(--color-warn)]">{abx.notes}</p>
           )}
+
+          <MoleculeViewer name={abx.name} className="mt-3" />
 
           <CategoryFilter value={catFilter} onChange={setCatFilter} />
 
