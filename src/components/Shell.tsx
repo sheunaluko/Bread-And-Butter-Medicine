@@ -1,5 +1,12 @@
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom"
-import { Home, FlaskConical, Pill, ArrowRightLeft, ShieldAlert } from "lucide-react"
+import {
+  Home,
+  FlaskConical,
+  Pill,
+  ArrowRightLeft,
+  ShieldAlert,
+  Camera,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemePicker } from "@/components/ThemePicker"
 import { FeedbackButton } from "@/components/FeedbackButton"
@@ -11,6 +18,7 @@ const nav = [
   { to: "/meds", label: "Meds", icon: Pill },
   { to: "/convert", label: "Convert", icon: ArrowRightLeft },
   { to: "/reversal", label: "Reverse", icon: ShieldAlert },
+  { to: "/rx-check", label: "Rx", icon: Camera },
 ] as const
 
 const titles: Record<string, string> = {
@@ -19,6 +27,7 @@ const titles: Record<string, string> = {
   "/meds": "Meds",
   "/convert": "Convert",
   "/reversal": "AC reversal",
+  "/rx-check": "Rx check",
 }
 
 export function Shell() {

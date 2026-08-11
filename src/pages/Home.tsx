@@ -4,6 +4,7 @@ import {
   Pill,
   ArrowRightLeft,
   ShieldAlert,
+  Camera,
   ArrowUpRight,
 } from "lucide-react"
 import { Card, CardBody } from "@/components/ui/Card"
@@ -32,6 +33,12 @@ const tools = [
     icon: ShieldAlert,
     title: "AC reversal",
     blurb: "Reversal options for warfarin, DOACs, heparins, antiplatelets, tPA.",
+  },
+  {
+    to: "/rx-check",
+    icon: Camera,
+    title: "Rx check",
+    blurb: "Photo of a med list → interactions + top side effects.",
   },
 ] as const
 
