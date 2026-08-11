@@ -80,20 +80,21 @@ async function handleFeedback(request: Request, env: Env): Promise<Response> {
 }
 
 // -----------------------------------------------------------------------------
-// /api/analyze-meds — vision LLM extracts a med list from a photo, then
-// returns interactions + side effects. Nothing is stored (patient med lists
-// are sensitive); image is passed to Workers AI and discarded.
+// /api/analyze-meds — vision LLM (Anthropic Claude Sonnet) extracts a med
+// list from a photo, then returns interactions + side effects. Nothing is
+// stored (patient med lists are sensitive); image is proxied to Anthropic
+// and discarded.
 // -----------------------------------------------------------------------------
 
 // ~5MB raw = ~7MB base64. Client is expected to resize before upload but we
 // enforce a ceiling as defense-in-depth (Workers request body limit is 100MB
 // on paid plans but we don't want to feed huge images to the vision model).
 const ANALYZE_MAX_BASE64_LEN = 7_000_000
+const ANTHROPIC_MODEL = "claude-sonnet-4-6"
 
 // Simple in-memory rate limit per Worker isolate. Not perfectly enforced
 // across the CF edge (different isolates have separate maps) but adequate
-// for personal-scale abuse deterrence. Workers AI account quota is the real
-// backstop.
+// for personal-scale abuse deterrence + cost containment.
 const ANALYZE_LIMIT_MAX = 10
 const ANALYZE_LIMIT_WINDOW_MS = 60 * 60 * 1000
 const analyzeRateHits = new Map<string, number[]>()
@@ -136,6 +137,16 @@ interface AnalyzeBody {
 }
 
 async function handleAnalyzeMeds(request: Request, env: Env): Promise<Response> {
+  if (!env.ANTHROPIC_API_KEY) {
+    return json(
+      {
+        error:
+          "vision service not configured — ANTHROPIC_API_KEY secret is missing on this Worker",
+      },
+      500,
+    )
+  }
+
   const ip = request.headers.get("cf-connecting-ip") ?? "unknown"
   if (!checkAnalyzeRateLimit(ip)) {
     return json({ error: "rate limited (10/hour). Try again later." }, 429)
@@ -151,36 +162,62 @@ async function handleAnalyzeMeds(request: Request, env: Env): Promise<Response> 
   const raw = typeof body.image === "string" ? body.image : ""
   if (!raw) return json({ error: "missing 'image' field (base64 string)" }, 400)
 
-  const b64 = raw.replace(/^data:image\/[^;]+;base64,/, "")
+  // Parse data URL to extract media type + base64 payload.
+  const match = raw.match(/^data:(image\/[a-z+]+);base64,(.+)$/i)
+  const mediaType = match ? match[1] : "image/jpeg"
+  const b64 = match ? match[2] : raw
   if (b64.length > ANALYZE_MAX_BASE64_LEN) {
     return json({ error: "image too large (max ~5 MB after resize)" }, 413)
   }
 
-  // Decode base64 → byte array for the vision model.
-  let bytes: Uint8Array
-  try {
-    const binary = atob(b64)
-    bytes = new Uint8Array(binary.length)
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-  } catch {
-    return json({ error: "invalid base64 image" }, 400)
-  }
-
   let modelOut: string
   try {
-    // Workers AI vision model. Returns { response: string } for llama vision.
-    const result = (await env.AI.run(
-      "@cf/meta/llama-3.2-11b-vision-instruct" as never,
-      {
-        image: [...bytes],
-        prompt: ANALYZE_PROMPT,
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL,
         max_tokens: 2500,
-        temperature: 0.2,
-      } as never,
-    )) as { response?: string; description?: string }
-    modelOut = result.response ?? result.description ?? ""
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: { type: "base64", media_type: mediaType, data: b64 },
+              },
+              { type: "text", text: ANALYZE_PROMPT },
+            ],
+          },
+        ],
+      }),
+    })
+    if (!resp.ok) {
+      const errText = await resp.text()
+      return json(
+        {
+          error: "anthropic api error",
+          status: resp.status,
+          detail: errText.slice(0, 800),
+        },
+        502,
+      )
+    }
+    const data = (await resp.json()) as {
+      content?: Array<{ type: string; text?: string }>
+    }
+    modelOut =
+      (data.content ?? [])
+        .filter((c) => c.type === "text")
+        .map((c) => c.text ?? "")
+        .join("")
+        .trim()
   } catch (e) {
-    return json({ error: "vision model failed", detail: (e as Error).message }, 502)
+    return json({ error: "vision call failed", detail: (e as Error).message }, 502)
   }
 
   const parsed = extractJson(modelOut)
