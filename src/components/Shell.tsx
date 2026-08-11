@@ -3,6 +3,7 @@ import { Home, FlaskConical, Pill, ArrowRightLeft, ShieldAlert } from "lucide-re
 import { cn } from "@/lib/utils"
 import { ThemePicker } from "@/components/ThemePicker"
 import { FeedbackButton } from "@/components/FeedbackButton"
+import { PwaUpdatePrompt } from "@/components/PwaUpdatePrompt"
 
 const nav = [
   { to: "/", label: "Home", icon: Home },
@@ -86,6 +87,8 @@ export function Shell() {
           ))}
         </ul>
       </nav>
+
+      <PwaUpdatePrompt />
     </div>
   )
 }

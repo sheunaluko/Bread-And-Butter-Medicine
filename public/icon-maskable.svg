@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- No rounded corners: OS applies its own mask over the safe zone (center 80%). -->
+  <rect width="512" height="512" fill="#0d0e14"/>
+  <text x="256" y="332" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-size="256" font-weight="700" fill="#6cf6ff">b</text>
+</svg>
